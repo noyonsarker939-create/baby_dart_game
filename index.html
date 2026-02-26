@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Pro Dart Game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ULTRA INSTINCT DART</title>
 <style>
 body{
 margin:0;
-background:#0f0f0f;
+background:black;
 color:white;
 text-align:center;
-font-family:sans-serif;
+font-family:Arial;
+overflow:hidden;
 }
 
 #game{
 position:relative;
 width:360px;
-height:600px;
-margin:20px auto;
+height:620px;
+margin:10px auto;
 background:#111;
 border-radius:20px;
 overflow:hidden;
@@ -23,136 +25,200 @@ overflow:hidden;
 
 #board{
 position:absolute;
-width:260px;
-height:260px;
+width:220px;
+height:220px;
 border-radius:50%;
-background:red;
-top:80px;
-left:50%;
-transform:translateX(-50%);
+background:radial-gradient(circle,yellow 15%,red 15%,red 50%,black 50%);
+top:100px;
+left:70px;
+transition:all 0.6s ease;
 }
 
-#baby{
-position:absolute;
-top:180px;
-left:50%;
-transform:translateX(-50%);
-font-size:50px;
-}
-
-#parents{
-position:absolute;
-bottom:20px;
-left:50%;
-transform:translateX(-50%);
-font-size:45px;
-cursor:pointer;
+#ui{
+margin-top:5px;
 }
 
 .dart{
 position:absolute;
-font-size:30px;
+font-size:26px;
+pointer-events:none;
 }
 
-#ui{
-margin-top:10px;
+.particle{
+position:absolute;
+width:6px;
+height:6px;
+background:yellow;
+border-radius:50%;
+pointer-events:none;
 }
 
-.shake{
-animation:shake 0.2s;
+.flash{
+animation:flash 0.2s;
 }
 
-@keyframes shake{
-0%{transform:translateX(-50%)}
-25%{transform:translateX(-45%)}
-50%{transform:translateX(-55%)}
-75%{transform:translateX(-45%)}
-100%{transform:translateX(-50%)}
+@keyframes flash{
+0%{background:#fff;}
+100%{background:#111;}
+}
+
+.bigText{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+font-size:40px;
+font-weight:bold;
+pointer-events:none;
+animation:pop 0.6s ease forwards;
+}
+
+@keyframes pop{
+0%{transform:translate(-50%,-50%) scale(0.5);opacity:1;}
+100%{transform:translate(-50%,-70%) scale(1.5);opacity:0;}
 }
 </style>
 </head>
 <body>
 
-<h2>Professional Dart 🎯</h2>
+<h2>ULTRA INSTINCT 🎯</h2>
 
 <div id="game">
 <div id="board"></div>
-<div id="baby">👶😊</div>
-<div id="parents">👨‍👩‍👦</div>
 </div>
 
 <div id="ui">
-Level: <span id="level">1</span> |
-Lives: <span id="lives">3</span>
+Score: <span id="score">0</span> |
+Lives: <span id="lives">3</span> |
+Combo: <span id="combo">0</span>
 </div>
 
 <script>
-let level=1;
+let score=0;
 let lives=3;
+let combo=0;
+let bossMode=false;
 
+let game=document.getElementById("game");
 let board=document.getElementById("board");
-let baby=document.getElementById("baby");
-let parents=document.getElementById("parents");
-let levelText=document.getElementById("level");
+let scoreText=document.getElementById("score");
 let livesText=document.getElementById("lives");
+let comboText=document.getElementById("combo");
 
-parents.onclick=function(){
+function moveBoard(){
+let x=Math.random()*120+40;
+let y=Math.random()*150+80;
+board.style.left=x+"px";
+board.style.top=y+"px";
+}
+setInterval(moveBoard,2000);
+
+game.addEventListener("click",function(e){
+
+if(lives<=0) return;
 
 let dart=document.createElement("div");
 dart.className="dart";
 dart.innerText="🎯";
-dart.style.bottom="80px";
-dart.style.left="50%";
-dart.style.transform="translateX(-50%)";
-document.getElementById("game").appendChild(dart);
 
-// random target X inside board area
+let rect=game.getBoundingClientRect();
+let startX=rect.width/2;
+let startY=rect.height-40;
+
+dart.style.left=startX+"px";
+dart.style.top=startY+"px";
+game.appendChild(dart);
+
+let targetX=e.clientX-rect.left;
+let targetY=e.clientY-rect.top;
+
+let t=0;
+let interval=setInterval(()=>{
+t+=0.05;
+let x=startX+(targetX-startX)*t;
+let y=startY+(targetY-startY)*t - 120*Math.sin(Math.PI*t);
+dart.style.left=x+"px";
+dart.style.top=y+"px";
+if(t>=1){
+clearInterval(interval);
+checkHit(targetX,targetY,dart);
+}
+},16);
+
+});
+
+function checkHit(x,y,dart){
+
 let boardRect=board.getBoundingClientRect();
-let randomX=boardRect.left + Math.random()*boardRect.width;
-let randomY=boardRect.top + Math.random()*boardRect.height;
+let centerX=boardRect.left+boardRect.width/2;
+let centerY=boardRect.top+boardRect.height/2;
 
-// animate
-dart.style.transition="all 0.7s ease";
+let dx=x-centerX;
+let dy=y-centerY;
+let distance=Math.sqrt(dx*dx+dy*dy);
 
-setTimeout(()=>{
-dart.style.left=(randomX - boardRect.left)+"px";
-dart.style.bottom="420px";
-},50);
-
-setTimeout(()=>{
-
-// collision check (simple)
-if(Math.random()>0.3){
-
-level++;
-levelText.innerText=level;
-
-board.classList.add("shake");
-setTimeout(()=>board.classList.remove("shake"),200);
-
-if(level>50){
-alert("YOU WIN 🔥");
-level=1;
-levelText.innerText=1;
+if(distance<30){
+score+=50+combo*5;
+combo++;
+showText("PERFECT 🔥");
+flash();
+explode(x,y);
 }
-
-}else{
-
+else if(distance<100){
+score+=20;
+combo++;
+showText("HIT 👍");
+explode(x,y);
+}
+else{
 lives--;
+combo=0;
 livesText.innerText=lives;
+showText("MISS ❌");
 dart.remove();
-
 if(lives<=0){
-alert("GAME OVER 💀");
-level=1;
-lives=3;
-levelText.innerText=1;
-livesText.innerText=3;
+setTimeout(()=>alert("GAME OVER 💀"),300);
+}
+return;
+}
+
+if(score>200 && !bossMode){
+bossMode=true;
+board.style.width="120px";
+board.style.height="120px";
+showText("BOSS MODE 😈");
+}
+
+scoreText.innerText=score;
+comboText.innerText=combo;
+
+}
+
+function explode(x,y){
+for(let i=0;i<15;i++){
+let p=document.createElement("div");
+p.className="particle";
+p.style.left=x+"px";
+p.style.top=y+"px";
+game.appendChild(p);
+let angle=Math.random()*2*Math.PI;
+let dist=Math.random()*40;
+p.style.transform="translate("+Math.cos(angle)*dist+"px,"+Math.sin(angle)*dist+"px)";
+setTimeout(()=>p.remove(),500);
 }
 }
 
-},750);
+function flash(){
+game.classList.add("flash");
+setTimeout(()=>game.classList.remove("flash"),200);
+}
 
+function showText(txt){
+let t=document.createElement("div");
+t.className="bigText";
+t.innerText=txt;
+game.appendChild(t);
+setTimeout(()=>t.remove(),600);
 }
 </script>
 
