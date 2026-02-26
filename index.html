@@ -1,40 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Parents Dart Game</title>
+<title>Pro Dart Game</title>
 <style>
 body{
 margin:0;
-background:#1a1a1a;
+background:#0f0f0f;
+color:white;
 text-align:center;
 font-family:sans-serif;
-color:white;
 }
 
 #game{
 position:relative;
+width:360px;
+height:600px;
 margin:20px auto;
-width:350px;
-height:550px;
 background:#111;
 border-radius:20px;
 overflow:hidden;
 }
 
 #board{
-width:250px;
-height:250px;
-background:red;
-border-radius:50%;
 position:absolute;
-top:60px;
+width:260px;
+height:260px;
+border-radius:50%;
+background:red;
+top:80px;
 left:50%;
 transform:translateX(-50%);
 }
 
 #baby{
 position:absolute;
-top:150px;
+top:180px;
 left:50%;
 transform:translateX(-50%);
 font-size:50px;
@@ -45,90 +45,113 @@ position:absolute;
 bottom:20px;
 left:50%;
 transform:translateX(-50%);
-font-size:40px;
+font-size:45px;
 cursor:pointer;
 }
 
-#dart{
+.dart{
 position:absolute;
-bottom:80px;
-left:50%;
-transform:translateX(-50%);
 font-size:30px;
-display:none;
-transition:all 0.6s ease;
 }
 
-#levelBox{
+#ui{
 margin-top:10px;
 }
 
+.shake{
+animation:shake 0.2s;
+}
+
+@keyframes shake{
+0%{transform:translateX(-50%)}
+25%{transform:translateX(-45%)}
+50%{transform:translateX(-55%)}
+75%{transform:translateX(-45%)}
+100%{transform:translateX(-50%)}
+}
 </style>
 </head>
 <body>
 
-<h2>Parents Throw Dart 🎯</h2>
+<h2>Professional Dart 🎯</h2>
 
 <div id="game">
 <div id="board"></div>
 <div id="baby">👶😊</div>
-<div id="dart">🎯</div>
 <div id="parents">👨‍👩‍👦</div>
 </div>
 
-<div id="levelBox">
-Level: <span id="level">1</span> / 50
+<div id="ui">
+Level: <span id="level">1</span> |
+Lives: <span id="lives">3</span>
 </div>
 
 <script>
 let level=1;
-let dart=document.getElementById("dart");
+let lives=3;
+
+let board=document.getElementById("board");
 let baby=document.getElementById("baby");
 let parents=document.getElementById("parents");
 let levelText=document.getElementById("level");
+let livesText=document.getElementById("lives");
 
 parents.onclick=function(){
 
-// show dart
-dart.style.display="block";
+let dart=document.createElement("div");
+dart.className="dart";
+dart.innerText="🎯";
 dart.style.bottom="80px";
+dart.style.left="50%";
+dart.style.transform="translateX(-50%)";
+document.getElementById("game").appendChild(dart);
 
-// random horizontal target
-let randomX = 100 + Math.random()*150;
-dart.style.left=randomX+"px";
+// random target X inside board area
+let boardRect=board.getBoundingClientRect();
+let randomX=boardRect.left + Math.random()*boardRect.width;
+let randomY=boardRect.top + Math.random()*boardRect.height;
 
-// throw animation
-setTimeout(function(){
-dart.style.bottom="400px";
+// animate
+dart.style.transition="all 0.7s ease";
+
+setTimeout(()=>{
+dart.style.left=(randomX - boardRect.left)+"px";
+dart.style.bottom="420px";
 },50);
 
-// after hit
-setTimeout(function(){
+setTimeout(()=>{
+
+// collision check (simple)
+if(Math.random()>0.3){
 
 level++;
 levelText.innerText=level;
 
-// emotion change
-if(level<15){
-baby.innerText="👶😊";
-}
-else if(level<30){
-baby.innerText="👶😐";
-}
-else{
-baby.innerText="👶😢";
-}
+board.classList.add("shake");
+setTimeout(()=>board.classList.remove("shake"),200);
 
 if(level>50){
-alert("Game Finished!");
+alert("YOU WIN 🔥");
 level=1;
 levelText.innerText=1;
-baby.innerText="👶😊";
 }
 
-dart.style.display="none";
+}else{
 
-},700);
+lives--;
+livesText.innerText=lives;
+dart.remove();
+
+if(lives<=0){
+alert("GAME OVER 💀");
+level=1;
+lives=3;
+levelText.innerText=1;
+livesText.innerText=3;
+}
+}
+
+},750);
 
 }
 </script>
