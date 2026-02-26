@@ -1,99 +1,116 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Baby Dart Game</title>
+<title>Baby Dart Pro</title>
 <style>
 body{
 margin:0;
-background:#111;
+background:linear-gradient(#0f2027,#203a43,#2c5364);
+font-family:sans-serif;
 text-align:center;
 color:white;
-font-family:sans-serif;
 }
+
+h2{margin-top:15px;}
 
 #game{
 position:relative;
-margin:auto;
+margin:20px auto;
 width:320px;
 height:500px;
-background:#222;
-border-radius:15px;
+background:#111;
+border-radius:20px;
 overflow:hidden;
-box-shadow:0 0 20px black;
+box-shadow:0 0 25px black;
 }
 
 #board{
-width:230px;
-height:230px;
+width:240px;
+height:240px;
 background:red;
 border-radius:50%;
 position:absolute;
-top:60px;
+top:70px;
 left:50%;
-transform:translateX(-50%);
-}
-
-#rope{
-position:absolute;
-top:60px;
-left:50%;
-width:2px;
-height:100px;
-background:white;
 transform:translateX(-50%);
 }
 
 #baby{
 position:absolute;
-top:140px;
+top:150px;
 left:50%;
 transform:translateX(-50%);
 font-size:50px;
+transition:0.3s;
 }
 
 #dart{
 position:absolute;
-bottom:10px;
-left:50%;
-transform:translateX(-50%);
+bottom:20px;
+left:20px;
 font-size:35px;
 cursor:pointer;
-transition:0.3s;
+}
+
+#scoreBox{
+margin-top:10px;
+font-size:18px;
+}
+
+button{
+padding:8px 15px;
+border:none;
+border-radius:10px;
+background:#ff4757;
+color:white;
+margin-top:10px;
 }
 
 </style>
 </head>
 <body>
 
-<h2>Baby Dart Game</h2>
+<h2>Baby Dart Pro 🎯</h2>
 
 <div id="game">
 <div id="board"></div>
-<div id="rope"></div>
 <div id="baby">😊</div>
 <div id="dart">🎯</div>
 </div>
 
-<p>Level: <span id="level">1</span> / 50</p>
+<div id="scoreBox">
+Level: <span id="level">1</span> |
+Score: <span id="score">0</span> |
+High Score: <span id="high">0</span>
+</div>
+
+<button onclick="restart()">Restart</button>
 
 <script>
 let level=1;
+let score=0;
+let highScore=localStorage.getItem("highScore")||0;
+
 let dart=document.getElementById("dart");
 let baby=document.getElementById("baby");
 let levelText=document.getElementById("level");
+let scoreText=document.getElementById("score");
+let highText=document.getElementById("high");
+
+highText.innerText=highScore;
+
+function moveDart(){
+let randomX=Math.random()*260;
+dart.style.left=randomX+"px";
+}
+
+setInterval(moveDart,800);
 
 dart.onclick=function(){
 
-dart.style.bottom="450px";
-
-setTimeout(function(){
-
-dart.style.bottom="10px";
-
+score+=10;
 level++;
-
-if(level<=50){
-
+scoreText.innerText=score;
 levelText.innerText=level;
 
 if(level<15){
@@ -106,14 +123,29 @@ else{
 baby.innerText="😢";
 }
 
-}else{
-alert("Game Finished!");
-level=1;
-levelText.innerText=level;
-baby.innerText="😊";
+if(level>50){
+gameOver();
 }
 
-},300);
+}
+
+function gameOver(){
+alert("Game Over! Final Score: "+score);
+
+if(score>highScore){
+localStorage.setItem("highScore",score);
+}
+
+restart();
+}
+
+function restart(){
+level=1;
+score=0;
+baby.innerText="😊";
+scoreText.innerText=score;
+levelText.innerText=level;
+highText.innerText=localStorage.getItem("highScore");
 }
 </script>
 
