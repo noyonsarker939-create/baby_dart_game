@@ -3,42 +3,11 @@
 <head>
 <title>Baby Dart Game</title>
 <style>
-body{
-margin:0;
-background:#222;
-text-align:center;
-color:white;
-font-family:sans-serif;
-}
-#game{
-position:relative;
-margin:auto;
-width:300px;
-height:400px;
-background:#444;
-border-radius:10px;
-overflow:hidden;
-}
-#board{
-width:200px;
-height:200px;
-background:red;
-border-radius:50%;
-position:absolute;
-top:50px;
-left:50px;
-}
-#doll{
-position:absolute;
-top:110px;
-left:120px;
-font-size:40px;
-}
-button{
-margin-top:20px;
-padding:10px 20px;
-font-size:18px;
-}
+body{margin:0;background:#222;text-align:center;color:white;font-family:sans-serif;}
+#game{position:relative;margin:auto;width:320px;height:500px;background:#333;border-radius:10px;overflow:hidden;}
+#board{width:220px;height:220px;background:red;border-radius:50%;position:absolute;top:60px;left:50%;transform:translateX(-50%);}
+#baby{position:absolute;top:130px;left:50%;transform:translateX(-50%);font-size:45px;}
+#dart{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:30px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -47,17 +16,35 @@ font-size:18px;
 
 <div id="game">
 <div id="board"></div>
-<div id="doll">👶</div>
+<div id="baby">😊</div>
+<div id="dart">🎯</div>
 </div>
 
-<button onclick="throwDart()">Throw Dart</button>
+<p>Level: <span id="level">1</span></p>
 
 <script>
-let level = 1;
+let level=1;
+let dart=document.getElementById("dart");
+let baby=document.getElementById("baby");
+let levelText=document.getElementById("level");
 
-function throwDart(){
-alert("Dart Thrown! Level: " + level);
+dart.onclick=function(){
+dart.style.bottom="450px";
+setTimeout(function(){
+dart.style.bottom="10px";
 level++;
+if(level<=50){
+levelText.innerText=level;
+if(level<15){baby.innerText="😊";}
+else if(level<30){baby.innerText="😐";}
+else{baby.innerText="😢";}
+}else{
+alert("Game Finished!");
+level=1;
+levelText.innerText=level;
+baby.innerText="😊";
+}
+},400);
 }
 </script>
 
