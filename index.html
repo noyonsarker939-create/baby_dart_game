@@ -3,11 +3,64 @@
 <head>
 <title>Baby Dart Game</title>
 <style>
-body{margin:0;background:#222;text-align:center;color:white;font-family:sans-serif;}
-#game{position:relative;margin:auto;width:320px;height:500px;background:#333;border-radius:10px;overflow:hidden;}
-#board{width:220px;height:220px;background:red;border-radius:50%;position:absolute;top:60px;left:50%;transform:translateX(-50%);}
-#baby{position:absolute;top:130px;left:50%;transform:translateX(-50%);font-size:45px;}
-#dart{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:30px;cursor:pointer;}
+body{
+margin:0;
+background:#111;
+text-align:center;
+color:white;
+font-family:sans-serif;
+}
+
+#game{
+position:relative;
+margin:auto;
+width:320px;
+height:500px;
+background:#222;
+border-radius:15px;
+overflow:hidden;
+box-shadow:0 0 20px black;
+}
+
+#board{
+width:230px;
+height:230px;
+background:red;
+border-radius:50%;
+position:absolute;
+top:60px;
+left:50%;
+transform:translateX(-50%);
+}
+
+#rope{
+position:absolute;
+top:60px;
+left:50%;
+width:2px;
+height:100px;
+background:white;
+transform:translateX(-50%);
+}
+
+#baby{
+position:absolute;
+top:140px;
+left:50%;
+transform:translateX(-50%);
+font-size:50px;
+}
+
+#dart{
+position:absolute;
+bottom:10px;
+left:50%;
+transform:translateX(-50%);
+font-size:35px;
+cursor:pointer;
+transition:0.3s;
+}
+
 </style>
 </head>
 <body>
@@ -16,11 +69,12 @@ body{margin:0;background:#222;text-align:center;color:white;font-family:sans-ser
 
 <div id="game">
 <div id="board"></div>
-<div id="baby">😊</div>
+<div id="rope"></div>
+<div id="baby">👦😊</div>
 <div id="dart">🎯</div>
 </div>
 
-<p>Level: <span id="level">1</span></p>
+<p>Level: <span id="level">1</span> / 50</p>
 
 <script>
 let level=1;
@@ -29,22 +83,37 @@ let baby=document.getElementById("baby");
 let levelText=document.getElementById("level");
 
 dart.onclick=function(){
+
 dart.style.bottom="450px";
+
 setTimeout(function(){
+
 dart.style.bottom="10px";
+
 level++;
+
 if(level<=50){
+
 levelText.innerText=level;
-if(level<15){baby.innerText="😊";}
-else if(level<30){baby.innerText="😐";}
-else{baby.innerText="😢";}
+
+if(level<15){
+baby.innerText="👦😊";
+}
+else if(level<30){
+baby.innerText="👦😐";
+}
+else{
+baby.innerText="👦😢";
+}
+
 }else{
 alert("Game Finished!");
 level=1;
 levelText.innerText=level;
-baby.innerText="😊";
+baby.innerText="👦😊";
 }
-},400);
+
+},300);
 }
 </script>
 
