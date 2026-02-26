@@ -2,16 +2,18 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ULTRA INSTINCT DART</title>
+<title>Ultimate Dart Game</title>
 <style>
 body{
 margin:0;
-background:black;
+background:#000;
 color:white;
 text-align:center;
 font-family:Arial;
 overflow:hidden;
 }
+
+h2{margin-top:10px;}
 
 #game{
 position:relative;
@@ -31,11 +33,7 @@ border-radius:50%;
 background:radial-gradient(circle,yellow 15%,red 15%,red 50%,black 50%);
 top:100px;
 left:70px;
-transition:all 0.6s ease;
-}
-
-#ui{
-margin-top:5px;
+transition:all 0.5s ease;
 }
 
 .dart{
@@ -67,7 +65,7 @@ position:absolute;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
-font-size:40px;
+font-size:36px;
 font-weight:bold;
 pointer-events:none;
 animation:pop 0.6s ease forwards;
@@ -75,13 +73,27 @@ animation:pop 0.6s ease forwards;
 
 @keyframes pop{
 0%{transform:translate(-50%,-50%) scale(0.5);opacity:1;}
-100%{transform:translate(-50%,-70%) scale(1.5);opacity:0;}
+100%{transform:translate(-50%,-70%) scale(1.4);opacity:0;}
 }
+
+#ui{
+margin-top:5px;
+}
+
+button{
+margin-top:5px;
+padding:6px 15px;
+border:none;
+border-radius:10px;
+background:red;
+color:white;
+}
+
 </style>
 </head>
 <body>
 
-<h2>ULTRA INSTINCT 🎯</h2>
+<h2>Ultimate Dart 🎯</h2>
 
 <div id="game">
 <div id="board"></div>
@@ -90,20 +102,27 @@ animation:pop 0.6s ease forwards;
 <div id="ui">
 Score: <span id="score">0</span> |
 Lives: <span id="lives">3</span> |
-Combo: <span id="combo">0</span>
+Combo: <span id="combo">0</span> |
+Best: <span id="best">0</span>
+<br>
+<button onclick="restartGame()">Restart</button>
 </div>
 
 <script>
 let score=0;
 let lives=3;
 let combo=0;
-let bossMode=false;
+let boss=false;
 
 let game=document.getElementById("game");
 let board=document.getElementById("board");
 let scoreText=document.getElementById("score");
 let livesText=document.getElementById("lives");
 let comboText=document.getElementById("combo");
+let bestText=document.getElementById("best");
+
+let best=localStorage.getItem("bestScore")||0;
+bestText.innerText=best;
 
 function moveBoard(){
 let x=Math.random()*120+40;
@@ -161,8 +180,8 @@ if(distance<30){
 score+=50+combo*5;
 combo++;
 showText("PERFECT 🔥");
-flash();
 explode(x,y);
+flash();
 }
 else if(distance<100){
 score+=20;
@@ -177,13 +196,16 @@ livesText.innerText=lives;
 showText("MISS ❌");
 dart.remove();
 if(lives<=0){
-setTimeout(()=>alert("GAME OVER 💀"),300);
+if(score>best){
+localStorage.setItem("bestScore",score);
+}
+setTimeout(()=>alert("GAME OVER 💀"),200);
 }
 return;
 }
 
-if(score>200 && !bossMode){
-bossMode=true;
+if(score>200 && !boss){
+boss=true;
 board.style.width="120px";
 board.style.height="120px";
 showText("BOSS MODE 😈");
@@ -191,7 +213,7 @@ showText("BOSS MODE 😈");
 
 scoreText.innerText=score;
 comboText.innerText=combo;
-
+updateBest();
 }
 
 function explode(x,y){
@@ -219,6 +241,26 @@ t.className="bigText";
 t.innerText=txt;
 game.appendChild(t);
 setTimeout(()=>t.remove(),600);
+}
+
+function updateBest(){
+if(score>best){
+best=score;
+localStorage.setItem("bestScore",best);
+bestText.innerText=best;
+}
+}
+
+function restartGame(){
+score=0;
+lives=3;
+combo=0;
+boss=false;
+board.style.width="220px";
+board.style.height="220px";
+scoreText.innerText=0;
+livesText.innerText=3;
+comboText.innerText=0;
 }
 </script>
 
